@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 هدية خاصة لموضي</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Changa:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP for Advanced Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sponge-yellow: #F7E436;
+            --sponge-pores: #D4B832;
+            --ocean-blue: #006994;
+            --pink-flower: #FF69B4;
+            --dark-bg: #0a0a0a;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--dark-bg);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ================= خلفية الجسيمات ================= */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* ================= مشهد البداية - سبونج بوب ================= */
+        .intro-scene {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .intro-scene.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* شخصية سبونج بوب CSS فقط */
+        .spongebob-container {
+            position: relative;
+            width: 200px;
+            height: 240px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .spongebob-body {
+            width: 180px;
+            height: 200px;
+            background: var(--sponge-yellow);
+            border: 4px solid #333;
+            border-radius: 10px;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 
+                inset -10px -10px 0 rgba(0,0,0,0.1),
+                0 10px 30px rgba(247, 228, 54, 0.3);
+        }
+
+        /* مسام الإسفنج */
+        .pore {
+            position: absolute;
+            background: var(--sponge-pores);
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .pore:nth-child(1) { width: 15px; height: 15px; top: 20px; left: 20px; }
+        .pore:nth-child(2) { width: 10px; height: 10px; top: 50px; right: 25px; }
+        .pore:nth-child(3) { width: 12px; height: 12px; bottom: 40px; left: 30px; }
+        .pore:nth-child(4) { width: 8px; height: 8px; top: 80px; left: 15px; }
+
+        /* العيون */
+        .eyes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .eye {
+            width: 50px;
+            height: 60px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 25px;
+            background: #4CAF50;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: lookAround 4s ease-in-out infinite;
+        }
+
+        @keyframes lookAround {
+            0%, 100% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-80%, -50%); }
+            75% { transform: translate(-20%, -50%); }
+        }
+
+        /* الابتسامة */
+        .mouth {
+            width: 80px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top: none;
+            border-radius: 0 0 40px 40px;
+            margin: 15px auto 0;
+            position: relative;
+        }
+
+        .teeth {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+        }
+
+        .tooth {
+            width: 15px;
+            height: 15px;
+            background: white;
+            border: 2px solid #333;
+            border-top: none;
+        }
+
+        /* الملابس */
+        .shirt {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: white;
+            border-top: 3px solid #333;
+        }
+
+        .tie {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 25px solid #e74c3c;
+        }
+
+        /* فقاعات */
+        .bubble {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: rise 4s ease-in infinite;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-300px) scale(1); opacity: 0; }
+        }
+
+        /* نص الترحيب */
+        .intro-text {
+            color: #fff;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(247, 228, 54, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .highlight-name {
+            color: var(--sponge-yellow);
+            font-size: 1.3em;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* ================= الزر التفاعلي ================= */
+        .magic-button {
+            margin-top: 30px;
+            padding: 20px 50px;
+            font-size: 1.3em;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .magic-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .magic-button:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .magic-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .magic-button:hover::before {
+            left: 100%;
+        }
+
+        /* ================= البطاقة الرئيسية ================= */
+        .main-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .main-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* تأثيرات الخلفية المتحركة */
+        .bg-shapes {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: moveShape 20s linear infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            border-radius: 50%;
+            top: 10%;
+            left: 10%;
+        }
+
+        .shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            top: 60%;
+            right: 10%;
+            animation-delay: -5s;
+        }
+
+        @keyframes moveShape {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 50px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* البطاقة ثلاثية الأبعاد */
+        .card-wrapper {
+            perspective: 1000px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.25),
+                0 0 0 1px rgba(255,255,255,0.2);
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .card:hover::before {
+            animation: shine 0.6s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        /* محتوى البطاقة */
+        .gift-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.8em;
+            color: #e74c3c;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .message {
+            font-size: 1.2em;
+            color: #555;
+            line-height: 2;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .message p {
+            margin: 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .signature-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-right: 5px solid #667eea;
+        }
+
+        .signature-text {
+            font-size: 1.1em;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* زر إعادة التشغيل */
+        .replay-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1em;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .replay-btn:hover {
+            background: #555;
+            transform: scale(1.05);
+        }
+
+        /* ================= تأثيرات إضافية ================= */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            z-index: 1000;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .floating-hearts {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .heart {
+            position: absolute;
+            color: #e74c3c;
+            font-size: 2em;
+            animation: float-up 4s ease-in forwards;
+            opacity: 0;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        /* تأثير الكتابة */
+        .typewriter {
+            overflow: hidden;
+            border-right: 3px solid #667eea;
+            white-space: nowrap;
+            animation: typing 3s steps(40) 1s forwards, blink 0.75s step-end infinite;
+            width: 0;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .spongebob-container { transform: scale(0.8); }
+            h1 { font-size: 1.8em; }
+            .subtitle { font-size: 1.4em; }
+            .card { padding: 25px; }
+        }
+
+        /* تحميل */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+
+        .loader.hidden { opacity: 0; pointer-events: none; }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(247, 228, 54, 0.3);
+            border-top-color: var(--sponge-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة التحميل -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- خلفية الجسيمات -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- مشهد البداية -->
+    <div class="intro-scene" id="introScene">
+        <div class="spongebob-container">
+            <div class="spongebob-body">
+                <div class="pore"></div>
+                <div class="pore"></div>
+                <div class="pore"></div>
+                <div class="pore"></div>
+                <div class="eyes">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+                <div class="mouth">
+                    <div class="teeth">
+                        <div class="tooth"></div>
+                        <div class="tooth"></div>
+                    </div>
+                </div>
+                <div class="shirt"></div>
+                <div class="tie"></div>
+            </div>
+        </div>
+        
+        <div class="intro-text" id="introText">
+            <span class="highlight-name">موضي!</span>
+            جاهزة للمفاجأة؟
+        </div>
+
+        <button class="magic-button" id="startBtn" onclick="startExperience()">
+            🎁 اضغطي هنا يا موضي
+        </button>
+
+        <!-- فقاعات -->
+        <div class="bubble" style="left: 20%; width: 20px; height: 20px; animation-delay: 0s;"></div>
+        <div class="bubble" style="left: 50%; width: 30px; height: 30px; animation-delay: 1s;"></div>
+        <div class="bubble" style="left: 80%; width: 15px; height: 15px; animation-delay: 2s;"></div>
+    </div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="main-container" id="mainContainer">
+        <div class="bg-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="card" id="mainCard">
+                <div class="gift-icon">🎁</div>
+                <h1>عيد ميلاد سعيد يا موضي!</h1>
+                <div class="subtitle">كل عام وأنتِ بخير ❤️</div>
+                
+                <div class="message" id="messageContainer">
+                    <p>الهدية الحقيقية هي إنك قريبة من القلب</p>
+                    <p>والورد هذا مجرد تمويه</p>
+                    <p>عشان ما تقولين عني بخيلة 😌</p>
+                </div>
+
+                <div class="signature-box">
+                    <div class="signature-text" id="signatureText"></div>
+                </div>
+
+                <button class="replay-btn" id="replayBtn" onclick="location.reload()">
+                    🔄 شغلي مرة ثانية
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- حاوية التأثيرات -->
+    <div class="floating-hearts" id="heartsContainer"></div>
+
+    <script>
+        // ================= نظام الجسيمات =================
+        class ParticleSystem {
+            constructor() {
+                this.canvas = document.getElementById('particles-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            createParticle(x, y) {
+                return {
+                    x, y,
+                    size: Math.random() * 3 + 1,
+                    speedX: (Math.random() - 0.5) * 2,
+                    speedY: (Math.random() - 0.5) * 2,
+                    life: 1,
+                    color: `hsl(${Math.random() * 60 + 40}, 100%, 50%)`
+                };
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // إضافة جسيمات جديدة
+                if (this.particles.length < 100 && Math.random() > 0.9) {
+                    this.particles.push(this.createParticle(
+                        Math.random() * this.canvas.width,
+                        Math.random() * this.canvas.height
+                    ));
+                }
+
+                this.particles.forEach((p, index) => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    p.life -= 0.005;
+                    p.size *= 0.99;
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.globalAlpha = p.life;
+                    this.ctx.fill();
+
+                    if (p.life <= 0) this.particles.splice(index, 1);
+                });
+
+                requestAnimationFrame(() => this.animate());
+            }
+
+            explode(x, y) {
+                for (let i = 0; i < 30; i++) {
+                    this.particles.push(this.createParticle(x, y));
+                }
+            }
+        }
+
+        const particleSystem = new ParticleSystem();
+
+        // ================= التحريكات =================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                
+                // تحريك مشهد البداية
+                gsap.to('#introText', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    delay: 0.5,
+                    ease: "power3.out"
+                });
+
+                gsap.to('#startBtn', {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.8,
+                    delay: 1,
+                    ease: "back.out(1.7)"
+                });
+
+            }, 1000);
+        });
+
+        function startExperience() {
+            const btn = document.getElementById('startBtn');
+            const rect = btn.getBoundingClientRect();
+            
+            // تأثير انفجار الجسيمات
+            particleSystem.explode(rect.left + rect.width/2, rect.top + rect.height/2);
+            
+            // إخفاء مشهد البداية
+            gsap.to('#introScene', {
+                opacity: 0,
+                scale: 0.9,
+                duration: 0.8,
+                ease: "power2.in",
+                onComplete: () => {
+                    document.getElementById('introScene').classList.add('hidden');
+                    showMainCard();
+                }
+            });
+
+            // تشغيل صوت (محاكاة)
+            playSoundEffect();
+        }
+
+        function showMainCard() {
+            const container = document.getElementById('mainContainer');
+            container.classList.add('active');
+
+            // تحريك البطاقة
+            gsap.from('#mainCard', {
+                rotationX: 90,
+                opacity: 0,
+                duration: 1.2,
+                ease: "power3.out"
+            });
+
+            // تحريك النصوص بالتتابع
+            const messages = document.querySelectorAll('.message p');
+            messages.forEach((msg, index) => {
+                gsap.to(msg, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: 0.5 + (index * 0.3),
+                    ease: "power2.out"
+                });
+            });
+
+            // تأثير الكتابة للتوقيع
+            setTimeout(() => {
+                typeWriter("ملاحظة: الفاتورة انحرقت مع المشاعر 😂", 'signatureText');
+            }, 2000);
+
+            // إظهار زر الإعادة
+            gsap.to('#replayBtn', {
+                opacity: 1,
+                y: 0,
+                duration: 0.5,
+                delay: 3
+            });
+
+            // إطلاق القلوب
+            launchHearts();
+            
+            // إطلاق الكونفيتي
+            setTimeout(() => createConfetti(), 500);
+        }
+
+        function typeWriter(text, elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '';
+            let i = 0;
+            
+            const type = () => {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                }
+            };
+            
+            type();
+        }
+
+        function launchHearts() {
+            const container = document.getElementById('heartsContainer');
+            const hearts = ['❤️', '💖', '💕', '💗', '💝', '💘'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    container.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 4000);
+                }, i * 200);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 30);
+            }
+        }
+
+        function playSoundEffect() {
+            // محاكاة صوت باستخدام Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.exponentialRampToValueAtTime(1046.5, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // تفاعل البطاقة مع الماوس
+        document.getElementById('mainCard').addEventListener('mousemove', (e) => {
+            const card = e.currentTarget;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        document.getElementById('mainCard').addEventListener('mouseleave', (e) => {
+            e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+        });
+    </script>
+</body>
+</html>
