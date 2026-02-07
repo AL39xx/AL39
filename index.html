@@ -1,204 +1,232 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ميلاد الغالية موضي 7 فبراير</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --gold: #d4af37;
-            --dark-bg: #0f0f0f;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هديتك يا موضي 🤍</title>
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--dark-bg);
-            color: var(--gold);
-            font-family: 'Amiri', serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+<!-- خطوط -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri:wght@700&display=swap" rel="stylesheet">
 
-        /* --- شاشة البداية (سبونج بوب) --- */
-        #intro-container {
-            text-align: center;
-            transition: all 0.8s ease;
-            z-index: 10;
-        }
+<style>
+* { box-sizing: border-box; }
 
-        .spongebob-wrapper {
-            position: relative;
-            width: 300px;
-            margin: 0 auto;
-        }
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Cairo', sans-serif;
+    background: radial-gradient(circle at top, #1a1a1a, #000);
+    color: #d4af37;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
 
-        .spongebob-img {
-            width: 250px;
-            animation: float 3s ease-in-out infinite;
-        }
+/* ================= المرحلة الأولى ================= */
 
-        .treasure-box {
-            width: 120px;
-            cursor: pointer;
-            margin-top: -50px;
-            position: relative;
-            transition: transform 0.3s;
-            filter: drop-shadow(0 0 10px var(--gold));
-        }
+.intro {
+    text-align: center;
+    animation: fadeIn 1.5s ease forwards;
+}
 
-        .treasure-box:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
+.intro h1 {
+    font-family: 'Amiri', serif;
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
 
-        .info-badge {
-            margin-top: 20px;
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-family: 'Reem Kufi', sans-serif;
-            animation: fadeIn 2s ease;
-        }
+.intro p {
+    font-size: 1.2em;
+    line-height: 1.8;
+}
 
-        /* --- البطاقة الرومانسية --- */
-        #card-container {
-            position: absolute;
-            width: 90%;
-            max-width: 450px;
-            background: linear-gradient(145deg, #1a1a1a, #000);
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            padding: 40px 20px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-            display: none; /* مخفية في البداية */
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+.spongebob {
+    font-size: 5rem;
+    margin: 25px 0;
+    animation: bounce 1.8s infinite;
+}
 
-        .card-header {
-            font-family: 'Reem Kufi', sans-serif;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+.start-btn {
+    margin-top: 30px;
+    padding: 14px 36px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(135deg, #d4af37, #f7e7a1);
+    color: #000;
+    font-size: 1.1em;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-        .card-body {
-            font-size: 1.4em;
-            line-height: 1.8;
-            color: #eee;
-        }
+/* ================= الكرت ================= */
 
-        .gold-divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 25px auto;
-            width: 80%;
-        }
+.card {
+    position: absolute;
+    width: 90%;
+    max-width: 450px;
+    background: linear-gradient(180deg, #111, #000);
+    border-radius: 22px;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(212,175,55,0.35);
+    opacity: 0;
+    transform: translateY(40px);
+    pointer-events: none;
+    transition: all 1s ease;
+}
 
-        /* --- المؤثرات --- */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
+.card.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; } to { opacity: 1; }
-        }
+.card h2 {
+    font-family: 'Amiri', serif;
+    font-size: 2.4em;
+    margin-bottom: 10px;
+}
 
-        .gold-heart {
-            position: absolute;
-            color: var(--gold);
-            font-size: 20px;
-            pointer-events: none;
-            animation: fall 4s linear forwards;
-        }
+.card h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
 
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
+.card p {
+    color: #eee;
+    font-size: 1.15em;
+    line-height: 1.9;
+}
 
-        .hint {
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 10px;
-        }
-    </style>
+.signature {
+    margin-top: 25px;
+    font-size: 0.95em;
+    opacity: 0.8;
+}
+
+/* ================= القلوب ================= */
+
+.hearts {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.heart {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #d4af37;
+    transform: rotate(-45deg);
+    animation: floatHeart 4s ease forwards;
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #d4af37;
+    border-radius: 50%;
+}
+
+.heart::before { top: -8px; left: 0; }
+.heart::after { left: 8px; top: 0; }
+
+/* ================= الحركات ================= */
+
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes floatHeart {
+    0% { opacity: 0; transform: translateY(0) rotate(-45deg) scale(0); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-260px) rotate(-45deg) scale(1.2); }
+}
+</style>
 </head>
+
 <body>
 
-    <div id="intro-container">
-        <div class="spongebob-wrapper">
-            <img src="https://assets.stickpng.com/images/580b57fbd9996e24bc43bd2a.png" class="spongebob-img" alt="Spongebob">
-            <br>
-            <img src="https://cdn-icons-png.flaticon.com/512/2850/2850369.png" class="treasure-box" id="openBtn">
-        </div>
-        
-        <div class="info-badge">
-            <span style="font-size: 1.2em;">7 فبراير 2000</span>
-            <span style="margin: 0 15px; border-left: 1px solid var(--gold);"></span>
-            <span style="font-size: 1.5em; font-weight: bold;">26 سنة</span>
-        </div>
-        <p class="hint">اضغطي على صندوق الكنز لرؤية المفاجأة</p>
+<!-- المرحلة الأولى -->
+<div class="intro" id="intro">
+    <div class="spongebob">🧽</div>
+    <h1>سبونج بوب يقول:</h1>
+    <p>
+        اليوم مو يوم عادي 🤍  
+        <br> اليوم ميلاد شخص مختلف  
+        <br><br>
+        🎂 <strong>7 فبراير 2000</strong>  
+        <br> ✨ العمر: <strong>26 سنة</strong>
+    </p>
+
+    <button class="start-btn" id="startBtn">
+        افتحي الهدية 🎁
+    </button>
+</div>
+
+<!-- الكرت -->
+<div class="card" id="card">
+    <h2>عيد ميلاد سعيد يا موضي 🤍</h2>
+    <h3>كل عام وأنتِ أجمل صدفة</h3>
+
+    <p>
+        في هذا اليوم وُلدت روح  
+        ما تشبه أحد  
+        <br>
+        وجودك هدية  
+        مو بس في عيد ميلادك  
+        <br><br>
+        الله يحفظك  
+        ويطول بعمرك  
+        ويخلي ضحكتك دايم قريبة 🤍
+    </p>
+
+    <div class="signature">
+        ملاحظة: سبونج بوب يشهد إن الهدية من القلب 😌
     </div>
+</div>
 
-    <div id="card-container">
-        <div class="card-header">ميلادكِ سُكّر..</div>
-        <div class="gold-divider"></div>
-        <div class="card-body">
-            يا وجهٍ رضا.. يا أعذب من السحاب، <br>
-            كل عام وأنتِ بقلبي، وأنا بكِ أحيا. <br>
-            <span style="color: var(--gold); font-weight: bold;">موضي الغالية..</span> <br>
-            في عامك الـ 26، أتمنى لكِ جمالاً يشبه قلبك، <br>
-            وفرحاً لا يغيب عن عينيكِ الفاتنة.
-        </div>
-        <div class="gold-divider"></div>
-        <p style="font-style: italic; font-size: 0.9em; color: var(--gold);">7 فبراير | يومٌ أشرق فيه الكون</p>
-    </div>
+<div class="hearts" id="hearts"></div>
 
-    <script>
-        const openBtn = document.getElementById('openBtn');
-        const intro = document.getElementById('intro-container');
-        const card = document.getElementById('card-container');
+<script>
+const startBtn = document.getElementById('startBtn');
+const intro = document.getElementById('intro');
+const card = document.getElementById('card');
+const hearts = document.getElementById('hearts');
 
-        openBtn.addEventListener('click', () => {
-            // تأثير التلاشي للمقدمة
-            intro.style.opacity = '0';
-            intro.style.transform = 'scale(0.8)';
-            
-            setTimeout(() => {
-                intro.style.display = 'none';
-                
-                // إظهار البطاقة
-                card.style.display = 'block';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                    startHearts();
-                }, 100);
-            }, 800);
-        });
+startBtn.addEventListener('click', () => {
+    intro.style.opacity = 0;
+    intro.style.transform = 'scale(0.9)';
 
-        function startHearts() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.innerHTML = '✨'; // أو استخدمي ❤️
-                heart.className = 'gold-heart';
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.top = '-20px';
-                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                document.body.appendChild(heart);
-                
-                setTimeout(() => heart.remove(), 4000);
-            }, 300);
-        }
-    </script>
+    setTimeout(() => {
+        intro.remove();
+        card.classList.add('show');
+        createHearts();
+    }, 700);
+});
+
+function createHearts() {
+    for (let i = 0; i < 25; i++) {
+        const h = document.createElement('div');
+        h.className = 'heart';
+        h.style.left = Math.random() * 100 + 'vw';
+        h.style.bottom = '-20px';
+        h.style.animationDelay = Math.random() * 2 + 's';
+        hearts.appendChild(h);
+        h.addEventListener('animationend', () => h.remove());
+    }
+}
+</script>
+
 </body>
 </html>
